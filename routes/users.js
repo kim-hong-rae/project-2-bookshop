@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const conn = require("../mariadb");
+const { StatusCodes } = require("http-status-code");
 
 const { body, param, validationResult } = require("express-validator");
 
@@ -14,7 +15,7 @@ const validate = (req, res, next) => {
   if (err.isEmpty) {
     return next();
   } else {
-    return res.status(400).json(err.array());
+    return res.status(StatusCodes.BAD_REQUEST).json(err.array());
   }
 };
 router.post(
