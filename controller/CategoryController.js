@@ -1,6 +1,5 @@
 const conn = require("../mariadb");
 const { StatusCodes } = require("http-status-codes");
-const { all } = require("../routes/books");
 
 const allCategory = (req, res) => {
   let sql = "SELECT * FROM category";
