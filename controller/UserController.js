@@ -3,7 +3,6 @@ const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken"); // jwt 모듈
 const crypto = require("crypto"); // crypto 모듈
 const dotenv = require("dotenv"); //dotenv 모듈
-const crypto = require("crypto"); //crypto 모듈
 
 dotenv.config();
 
