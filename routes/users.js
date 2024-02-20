@@ -17,11 +17,31 @@ const validate = (req, res, next) => {
     return res.status(400).json(err.array());
   }
 };
-router.post("/join", (req, res) => {
-  res.json({
-    message: "회원가입",
-  });
-});
+router.post(
+  "/join",
+  [
+    body("email").notEmpty().isEmail().withMessage("email값 필요!"),
+    body("password").notEmpty().isString().withMessage("비밀번호 확인 필요!"),
+    validate,
+  ],
+  (req, res) => {
+    const { email, password } = req.body;
+    let sql = "INSERT INTO users (email,password) VALUES (?,?)";
+
+    let values = [email, password];
+
+    conn.query(sql, values, (err, results) => {
+      if (err) {
+        return res.status(400).end();
+      }
+      res.status(201).json(results);
+    });
+
+    res.json({
+      message: "회원가입",
+    });
+  }
+);
 
 router.post("/login", (req, res) => {
   res.json({
