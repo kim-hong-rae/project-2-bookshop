@@ -34,3 +34,60 @@ VALUES ("혹부리 영감", 22,2, "ebook", 10, "노래 주머니..", "혹 두개
 SELECT * FROM books LEFT JOIN category on books.category_id = category.id;
 
 SELECT * FROM books LEFT JOIN category on books.category_id = category.id WHERE books.id = 1;
+
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (1,1);
+
+//좋아요 삭제
+DELETE FROM likes WHERE user_id = 1 AND liked_book_id = 3;
+
+//좋아요 추가
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (1,1);
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (1,2);
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (1,3);
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (3,1);
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (4,1);
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (2,1);
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (2,2);
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (2,3);
+INSERT INTO likes (user_id,liked_book_id)
+VALUES (2,5);
+
+//장바구니 담기
+INSERT INTO cartItems(book_id, quantity, user_id) VALUES (1,1,1);
+
+//장바구니에서 선택한(장바구니 도서 id) 아이템 목록 조회
+SELECT * FROM cartItems WHERE user_id=1 AND id IN (1,3);
+
+//배송 정보 입력
+INSERT INTO delivery(address, receiver, contact) VALUES ("서울시 중구", "김송아", "010-1234-5678")
+const delivery_id = SELECT max(id) FROM delivery;
+
+//주문 정보 입력
+INSERT INTO orders(book_title, total_quantity, total_price, user_id, delivery_id)
+VALUES ("어린왕자들", 3, 60000, 1,) delivery_id;
+const order_id = SELECT max(id) FROM orders;
+
+//주문 상세 목록 입력
+INSERT INTO orderedBook(order_id, book_id, quantity)
+VALUES (order_id,1,1);
+
+INSERT INTO orderedBook(order_id, book_id, quantity)
+VALUES (order_id,3,2);
+
+SELECT max(id) FROM Bookshop.orderedBook;
+
+//결제된 도서 장바구니 삭제
+DELETE FROM cartItems WHERE id IN(1,2,3);
+
+SELECT id, created_at, book_title, total_price, total_quantity, address, receiver, contact FROM orders LEFT JOIN delivery ON orders.delivery_id = delivery.id;
+
+SELEC
