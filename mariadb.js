@@ -5,8 +5,7 @@ const connection = mariadb.createConnection({
   host: "127.0.0.1",
   user: "root",
   password: "root",
-  timezone: "Asia/Seoul",
-  database: "Youtube",
+  database: "BookShop",
   port: 3307,
   dateStrings: true,
 });
