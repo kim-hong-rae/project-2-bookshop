@@ -87,17 +87,10 @@ const bookDetail = (req, res) => {
   } else {
     let book_id = req.params.id;
 
-    if (authorization.id) {
-      let sql =
-        "Select *, (SELECT count(*) FROM likes WHERE liked_book_id = books.id) AS likes,(Select count(*) from likes where user_id =? and liked_book_id = ?) as liked from books LEFT JOIN category on books.category_id = category.category_id where books.id = ?";
-      let values = [authorization.id, book_id, book_id];
-      excuteQuery(sql, values, res);
-    } else {
-      let sql =
-        "Select *, (SELECT count(*) FROM likes WHERE liked_book_id = books.id) AS likes,(Select count(*) from likes where user_id =? and liked_book_id = ?) as liked from books LEFT JOIN category on books.category_id = category.category_id where books.id = ?";
-      let values = [user_id, book_id, book_id];
-      excuteQuery(sql, values, res);
-    }
+    let sql =
+      "Select *, (SELECT count(*) FROM likes WHERE liked_book_id = books.id) AS likes,(Select count(*) from likes where user_id =? and liked_book_id = ?) as liked from books LEFT JOIN category on books.category_id = category.category_id where books.id = ?";
+    let values = [authorization.id, book_id, book_id];
+    excuteQuery(sql, values, res);
   }
 };
 
@@ -107,14 +100,7 @@ const searchBooks = (req, res) => {
   let sql =
     "SELECT *, (SELECT count(*) FROM likes WHERE liked_book_id = books.id) AS likes FROM books WHERE title LIKE ? OR author LIKE ?";
   let values = [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`];
-
-  conn.query(sql, values, (err, results) => {
-    if (err) {
-      return res.status(StatusCodes.BAD_REQUEST).end();
-    }
-    if (results[0]) return res.status(StatusCodes.OK).json(results);
-    else return res.status(StatusCodes.NOT_FOUND).end();
-  });
+  excuteQuery(sql, values, res);
 };
 
 const excuteQuery = (sql, values, res) => {

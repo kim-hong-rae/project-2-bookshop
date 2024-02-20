@@ -21,12 +21,7 @@ const addToCart = (req, res) => {
       "INSERT INTO cartItems (book_id,quantity, user_id) VALUES (?,?,?)";
     let values = [book_id, quantity, authorization.id];
 
-    conn.query(sql, values, (err, results) => {
-      if (err) {
-        return res.status(StatusCodes.BAD_REQUEST).end();
-      }
-      return res.status(StatusCodes.OK).json(results);
-    });
+    excuteQuery(sql, values, err);
   }
 };
 
@@ -51,12 +46,7 @@ const getCartItems = (req, res) => {
       sql += " AND cartItems.id IN(?)";
       values.push(selected);
     }
-    conn.query(sql, values, (err, results) => {
-      if (err) {
-        return res.status(StatusCodes.BAD_REQUEST).end();
-      }
-      return res.status(StatusCodes.OK).json(results);
-    });
+    excuteQuery(sql, values, err);
   }
 };
 
@@ -77,13 +67,19 @@ const removeCartItem = (req, res) => {
 
     let sql = "DELETE FROM cartItems WHERE id = ?";
 
-    conn.query(sql, cartItemId, (err, results) => {
-      if (err) {
-        return res.status(StatusCodes.BAD_REQUEST).end();
-      }
-      return res.status(StatusCodes.OK).json(results);
-    });
+    let values = [cartItemId];
+
+    excuteQuery(sql, values, err);
   }
+};
+
+const excuteQuery = (sql, values, err) => {
+  conn.query(sql, values, (err, results) => {
+    if (err) {
+      return res.status(StatusCodes.BAD_REQUEST).end();
+    }
+    return res.status(StatusCodes.OK).json(results);
+  });
 };
 
 module.exports = {

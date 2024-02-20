@@ -25,7 +25,6 @@ const join = (req, res) => {
     else return res.status(StatusCodes.BAD_REQUEST).end();
   });
 };
-
 const login = (req, res) => {
   const { email, password } = req.body;
   let sql = "SELECT * FROM users WHERE email=?";
@@ -49,10 +48,31 @@ const login = (req, res) => {
         },
         process.env.PRIVATE_KEY,
         {
-          expiresIn: "30m",
+          expiresIn: "3m",
           issuer: "hongrae",
         }
       );
+
+      const refreshToken = jwt.sign(
+        {
+          id: loginUser.id,
+          email: loginUser.email,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+          expiresIn: "7d",
+          issuer: "hongrae",
+        }
+      );
+
+      //리프레시 토큰을 데이터베이스에 저장
+      let sql = "UPDATE users SET refresh_token = ? WHERE id = ?";
+      conn.query(sql, [refreshToken, loginUser.id], (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(StatusCodes.BAD_REQUEST).end();
+        }
+      });
 
       res.cookie("token", token, {
         httpOnly: true,
@@ -60,10 +80,36 @@ const login = (req, res) => {
 
       console.log(token);
 
-      res.status(StatusCodes.ACCEPTED).json(results);
+      res.status(StatusCodes.ACCEPTED).json({ token, refreshToken });
     } else {
       res.status(StatusCodes.UNAUTHORIZED).end();
     }
+  });
+};
+
+const refreshAccessToken = (req, res) => {
+  const { refreshToken } = req.body;
+
+  // 리프레시 토큰을 검증
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(StatusCodes.UNAUTHORIZED).end();
+    }
+
+    // 리프레시 토큰이 유효한 경우, 새로운 액세스 토큰 발급
+    const newAccessToken = jwt.sign(
+      {
+        id: decoded.id,
+        email: decoded.email,
+      },
+      process.env.PRIVATE_KEY,
+      {
+        expiresIn: "1m",
+        issuer: "hongrae",
+      }
+    );
+
+    res.status(StatusCodes.OK).json({ token: newAccessToken });
   });
 };
 
@@ -109,4 +155,4 @@ const passwordReset = (req, res) => {
   });
 };
 
-module.exports = { join, login, passwordResetRequest, passwordReset };
+module.exports = { join, login, passwordResetRequest, passwordReset,refreshAccessToken };

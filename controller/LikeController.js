@@ -20,12 +20,7 @@ const addLike = (req, res) => {
     let sql = "INSERT INTO likes (user_id,liked_book_id) VALUES (?,?)";
     let values = [authorization.id, book_id];
 
-    conn.query(sql, values, (err, results) => {
-      if (err) {
-        return res.status(StatusCodes.BAD_REQUEST).end();
-      }
-      return res.status(StatusCodes.OK).json(results);
-    });
+    executeQuery(sql, values, res); // 수정된 함수 이름
   }
 };
 
@@ -45,16 +40,21 @@ const removeLike = (req, res) => {
     let sql = "DELETE FROM likes WHERE user_id = ? AND liked_book_id = ?";
     let values = [authorization.id, book_id];
 
-    conn.query(sql, values, (err, results) => {
-      if (err) {
-        return res.status(StatusCodes.BAD_REQUEST).end();
-      }
-      return res.status(StatusCodes.OK).json(results);
-    });
+    executeQuery(sql, values, res); // 수정된 함수 이름
   }
+};
+
+const executeQuery = (sql, values, res) => {
+  conn.query(sql, values, (err, results) => {
+    if (err) {
+      return res.status(StatusCodes.BAD_REQUEST).end();
+    }
+    return res.status(StatusCodes.OK).json(results);
+  });
 };
 
 module.exports = {
   addLike,
   removeLike,
+  executeQuery,
 };
